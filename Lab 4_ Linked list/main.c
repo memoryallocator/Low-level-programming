@@ -2,24 +2,22 @@
 #pragma ide diagnostic ignored "cert-err34-c"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
+#include <inttypes.h>
 #include <iso646.h>
-#include <assert.h>
 
 #include "linked_list.h"
 #include "utilities.h"
 
-List read_list_from_file(const FILE* const file) {
-  List res = { NULL };
+struct List read_list_from_file(const FILE* const file) {
+  struct List res = { NULL };
 
-  int value;
-  int fscanf_returned = fscanf(file, "%d", &value);
+  ListDataType value;
+  int fscanf_returned = fscanf((FILE*) file, "%" SCNd64, &value);
   if (fscanf_returned == 1) {
     res = list_create(value);
 
     do {
-      fscanf_returned = fscanf(file, "%d", &value);
+      fscanf_returned = fscanf((FILE*) file, "%" SCNd64, &value);
       if (fscanf_returned != 1) {
         break;
       }
@@ -30,49 +28,43 @@ List read_list_from_file(const FILE* const file) {
   return res;
 }
 
-List read_list_from_stdin() {
-  return read_list_from_file(stdin);
-}
-
 size_t prompt_a_number() {
   size_t x;
   while (true) {
     printf("Your number: ");
-    int scanf_returned = scanf("%lu", &x);
+    int scanf_returned = scanf("%zu", &x);
     printf("\n");
     if (scanf_returned != 1) {
+      while ((scanf_returned = getchar()) != EOF and scanf_returned != '\n');
       printf("Please try again.\n");
     } else {
-      break;
+      return x;
     }
   }
-
-  return x;
 }
 
 int main() {
   {
     ListDataType q;
-    const bool kListDataTypeIsNotInt = _Generic(q, int: false, default: true);
-    if (kListDataTypeIsNotInt) {
-      print_error_message_and_exit("list data types other than int are not supported");
-    }
+    _Static_assert(IS_INT64_T(q), "list data types other than int64_t are not supported");
   }
 
-  List list = read_list_from_stdin();
+  struct List list = read_list_from_file(stdin);
 
   printf("The sum of the elements of the input list: ");
-  const ListDataType kSum = list_sum(list);
-  printf("%d\n", kSum);
+  const intmax_t kSum = list_sum(list);
+  printf("%jd\n", kSum);
 
-  printf("Enter a number n, and I'll print the nth element of the input list!\n");
-  size_t n = prompt_a_number();
-  const ListNode* kNthNode = list_node_at(list, n);
+  printf("Enter a number, and I'll print the nth element of the input list!\n");
+  const size_t kN = prompt_a_number();
+  const struct ListNode* kNthNode = list_node_at(list, kN);
 
   if (kNthNode == NULL) {
-    print_error_message_and_exit("List is too short!\n");
+    printf("Can't print the nth element. See STDERR for more details.\n");
+    fprintf(stderr, "List is too short!\n");
+  } else {
+    printf("list[%zu] is %" PRId64 "\n", kN, kNthNode->value);
   }
-  printf("list[%lu] is %d\n", n, kNthNode->value);
 
   list_free(list);
 }

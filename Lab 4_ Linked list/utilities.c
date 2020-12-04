@@ -5,5 +5,5 @@
 
 void print_error_message_and_exit(const char* const err_msg) {
   fprintf(stderr, "Error: %s\n", err_msg);
-  exit(1);
+  abort();
 }
