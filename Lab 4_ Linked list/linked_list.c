@@ -128,19 +128,19 @@ void list_reverse(struct List* const list_ptr) {
 
   struct ListNode* next_node = curr_node->next;
 
-  while (next_node != NULL) {
+  for (;;) {
     struct ListNode* const root = list_ptr->root;
-    curr_node->next = list_ptr->root;
     list_ptr->root = curr_node;
     list_ptr->root->next = root;
+
     prev_node->next = next_node;
+    if (next_node == NULL) {
+      break;
+    }
+
     curr_node = next_node;
     next_node = next_node->next;
   }
-
-  curr_node->next = list_ptr->root;
-  list_ptr->root = curr_node;
-  prev_node->next = NULL;
 }
 
 struct List list_deep_copy(struct List list) {
@@ -175,5 +175,5 @@ bool list_equals(const struct List lhs, const struct List rhs) {
     r_node = r_node->next;
   }
 
-  return l_node->value == r_node->value;
+  return l_node == r_node;  // l_node is NULL OR r_node is NULL. (l_node == r_node) <=> (l_node == NULL == r_node)
 }

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <inttypes.h>
+#include <assert.h>
 #include <iso646.h>
 
 #include "linked_list.h"
@@ -67,9 +68,10 @@ int main() {
     printf("list[%zu] is %" PRId64 "\n", kN, kNthNode->value);
   }
 
-  // list_reverse(&list);
-  // const struct List list_2 = list_deep_copy(list);
-  // list_free(list_2);
+  list_reverse(&list);
+  const struct List list_2 = list_deep_copy(list);
+  assert(list_equals(list, list_2));
+  list_free(list_2);
 
   list_free(list);
 }
