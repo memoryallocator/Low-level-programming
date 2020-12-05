@@ -40,4 +40,6 @@ struct List list_deep_copy(struct List list);
 
 bool list_equals(struct List lhs, struct List rhs);
 
+void list_reverse(struct List* list_ptr);
+
 #endif  // LOW_LEVEL_LINKED_LIST_H

@@ -11,6 +11,7 @@ static struct ListNode* list_create_new_node(const ListDataType n) {
     print_error_message_and_exit("failed to allocate memory");
   }
 
+  *new_node = (struct ListNode) { 0 };
   new_node->next = NULL;
   new_node->value = n;
   return new_node;
@@ -109,14 +110,49 @@ intmax_t list_sum(const struct List list) {
   return res;
 }
 
+void list_reverse(struct List* const list_ptr) {
+  if (list_ptr == NULL) {
+    print_error_message_and_exit("unable to reverse NULL");
+  }
+
+  if (list_is_empty(*list_ptr)) {
+    return;
+  }
+
+  struct ListNode* prev_node = list_ptr->root;
+  struct ListNode* curr_node = prev_node->next;
+
+  if (curr_node == NULL) {
+    return;
+  }
+
+  struct ListNode* next_node = curr_node->next;
+
+  while (next_node != NULL) {
+    struct ListNode* const root = list_ptr->root;
+    curr_node->next = list_ptr->root;
+    list_ptr->root = curr_node;
+    list_ptr->root->next = root;
+    prev_node->next = next_node;
+    curr_node = next_node;
+    next_node = next_node->next;
+  }
+
+  curr_node->next = list_ptr->root;
+  list_ptr->root = curr_node;
+  prev_node->next = NULL;
+}
+
 struct List list_deep_copy(struct List list) {
   struct List res = { NULL };
 
   struct ListNode* curr_node = list.root;
   while (curr_node != NULL) {
-    list_add_back(&res, curr_node->value);
+    list_add_front(&res, curr_node->value);
     curr_node = curr_node->next;
   }
+
+  list_reverse(&res);
   return res;
 }
 

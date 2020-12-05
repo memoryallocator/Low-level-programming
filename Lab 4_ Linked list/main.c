@@ -35,7 +35,8 @@ size_t prompt_a_number() {
     int scanf_returned = scanf("%zu", &x);
     printf("\n");
     if (scanf_returned != 1) {
-      while ((scanf_returned = getchar()) != EOF and scanf_returned != '\n');
+      while ((scanf_returned = getchar()) != EOF and scanf_returned != '\n') {
+      }
       printf("Please try again.\n");
     } else {
       return x;
@@ -65,6 +66,10 @@ int main() {
   } else {
     printf("list[%zu] is %" PRId64 "\n", kN, kNthNode->value);
   }
+
+  // list_reverse(&list);
+  // const struct List list_2 = list_deep_copy(list);
+  // list_free(list_2);
 
   list_free(list);
 }
