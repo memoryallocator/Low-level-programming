@@ -97,10 +97,6 @@ ListDataType get_abs_and_print_with_space_as_separator(const ListDataType x) {
   return kAbsX;
 }
 
-// void output_list_item_to_file_with_space_as_separator(const ListDataType x) {
-//   output_to_file(output_file, x, ' ');
-// }
-
 bool save(const struct List* const list_ptr, const char* const filename) {
   if (list_ptr == NULL) {
     return false;
@@ -146,33 +142,15 @@ bool serialize(const struct List* const list_ptr, const char* const filename) {
     return false;
   }
 
-  const size_t kListDataTypeLenInBytes = sizeof(ListDataType);
-  unsigned char buffer[kListDataTypeLenInBytes];
-
   const struct ListNode* curr_node = list_ptr->root;
   while (curr_node != NULL) {
     const ListDataType kCurrItem = curr_node->value;
-    for (size_t i = 0; i < kListDataTypeLenInBytes; ++i) {
-      const ListDataType kCurrItemShifted = kCurrItem >> (8 * i);
-      const unsigned char kLastByteOfShiftedValue = kCurrItemShifted & 0xff;
-      buffer[i] = kLastByteOfShiftedValue;
-    }
-
-    fwrite(buffer, kListDataTypeLenInBytes, 1, output_file);
+    fwrite(&kCurrItem, sizeof(ListDataType), 1, output_file);
     curr_node = curr_node->next;
   }
 
   fclose(output_file);
   return true;
-}
-
-ListDataType buffer_to_list_data_type(const unsigned char* const buffer) {
-  ListDataType res = 0;
-  for (size_t i = 0; i < sizeof(ListDataType); ++i) {
-    const unsigned char kIthByte = buffer[i];
-    res += kIthByte << (8 * i);
-  }
-  return res;
 }
 
 bool deserialize(struct List* const list_ptr, const char* const filename) {
@@ -185,26 +163,21 @@ bool deserialize(struct List* const list_ptr, const char* const filename) {
     return false;
   }
 
-  const size_t kListDataTypeLenInBytes = sizeof(ListDataType);
-  const unsigned char* buffer = malloc(sizeof(unsigned char) * kListDataTypeLenInBytes);
-
-  size_t fread_returned = fread((void*) buffer, kListDataTypeLenInBytes, 1, input_file);
+  ListDataType value;
+  size_t fread_returned = fread(&value, sizeof(ListDataType), 1, input_file);
   if (fread_returned != 1) {
     return false;
   }
 
   list_free(*list_ptr);
-
-  ListDataType value = buffer_to_list_data_type(buffer);
   *list_ptr = list_create(value);
 
   do {
-    fread_returned = fread((void*) buffer, kListDataTypeLenInBytes, 1, input_file);
+    fread_returned = fread(&value, sizeof(ListDataType), 1, input_file);
     if (fread_returned != 1) {
       break;
     }
 
-    value = buffer_to_list_data_type(buffer);
     list_add_front(list_ptr, value);
   } while (true);
 
@@ -215,8 +188,7 @@ bool deserialize(struct List* const list_ptr, const char* const filename) {
 
 int main() {
   {
-    ListDataType q;
-    _Static_assert(IS_INT64_T(q), "list data types other than int64_t are not supported");
+    _Static_assert(IS_INT64_T((ListDataType) 0), "list data types other than int64_t are not supported");
   }
 
   struct List list = read_list_from_file(stdin, true);
@@ -255,13 +227,13 @@ int main() {
   const int kPowersCount = 10;
   // const int kBase = 2;
   printf("First %d powers of 2: ", kPowersCount);
-  const struct List kPowersOfTwo = iterate(1, kPowersCount, mul_by_2_and_print_with_space_as_separator);
+  struct List powers_of_two = iterate(1, kPowersCount, mul_by_2_and_print_with_space_as_separator);
   printf("\n");
 
-  const char* const filename = "list.txt";
+  const char* const kFilename = "list.txt";
 
   printf("Saving the input list to list.txt file...\n");
-  if (not save(&list, filename)) {
+  if (not save(&list, kFilename)) {
     print_error_message_and_exit("save() failed");
   }
 
@@ -271,7 +243,7 @@ int main() {
   list_add_back(&l2, 4);
 
   printf("Loading the input list from list.txt file...\n");
-  if (not load(&l2, filename)) {
+  if (not load(&l2, kFilename)) {
     print_error_message_and_exit("load() failed");
   }
 
@@ -288,7 +260,7 @@ int main() {
     print_error_message_and_exit("serialize() failed");
   }
 
-  struct List l3 = { NULL };
+  struct List l3 = { 0 };
 
   printf("Loading the input list from the serialized file...\n");
   if (not deserialize(&l3, serialized_filename)) {
@@ -301,6 +273,7 @@ int main() {
 
   assert(list_equals(l2, l3));
 
+  list_free(powers_of_two);
   list_free(list);
   list_free(l2);
   list_free(l3);

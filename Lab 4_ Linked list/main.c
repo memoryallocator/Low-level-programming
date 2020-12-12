@@ -46,8 +46,7 @@ size_t prompt_a_number() {
 
 int main() {
   {
-    ListDataType q;
-    _Static_assert(IS_INT64_T(q), "list data types other than int64_t are not supported");
+    _Static_assert(IS_INT64_T((ListDataType) 0), "list data types other than int64_t are not supported");
   }
 
   struct List list = read_list_from_file(stdin);
@@ -68,10 +67,11 @@ int main() {
   }
 
   list_reverse(&list);
-  const struct List list_2 = list_deep_copy(list);
-  assert(list_equals(list, list_2));
-  list_free(list_2);
-
+  {
+    const struct List list_2 = list_deep_copy(list);
+    assert(list_equals(list, list_2));
+    list_free(list_2);
+  }
   list_free(list);
 }
 
