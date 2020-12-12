@@ -22,11 +22,11 @@ void print(const ListDataType x, const char separator) {
 }
 
 void print_with_space_as_separator(const ListDataType x) {
-  return print(x, ' ');
+  print(x, ' ');
 }
 
 void print_with_newline_symbol_as_separator(const ListDataType x) {
-  return print(x, '\n');
+  print(x, '\n');
 }
 
 ListDataType add(const ListDataType x, const ListDataType y) {
@@ -43,19 +43,20 @@ ListDataType mul_by_2_and_print_with_space_as_separator(const ListDataType x) {
     print_with_space_as_separator(x);
     first_run = false;
   }
+
   const ListDataType kXMultipliedBy2 = mul(x, 2);
   print_with_space_as_separator(kXMultipliedBy2);
   return kXMultipliedBy2;
 }
 
 ListDataType print_square_with_space_as_separator(ListDataType x) {
-  ListDataType kSquareOfX = x * x;
+  const ListDataType kSquareOfX = x * x;
   print_with_space_as_separator(kSquareOfX);
   return kSquareOfX;
 }
 
 ListDataType print_cube_with_space_as_separator(ListDataType x) {
-  ListDataType kCubeOfX = x * x * x;
+  const ListDataType kCubeOfX = x * x * x;
   print_with_space_as_separator(kCubeOfX);
   return kCubeOfX;
 }
