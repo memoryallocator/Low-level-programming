@@ -5,55 +5,41 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef int ListDataType;
+typedef int64_t ListDataType;
 
-typedef struct ListNode {
+struct ListNode {
     ListDataType value;
     struct ListNode* next;
-} ListNode;
+};
 
-typedef struct {
-    ListNode* root;
-} List;
+struct List {
+    struct ListNode* root;
+};
 
-ListNode* list_create_node(ListDataType n);
+struct List list_create(ListDataType n);
 
-ListNode* list_create_an_empty_node();
+void list_add_front(struct List* list_ptr, ListDataType n);
 
-List list_create(ListDataType n);
+void list_add_back(struct List* list_ptr, ListDataType n);
 
-void list_add_front(List* list_ptr, ListDataType n);
+bool list_is_empty(struct List list);
 
-void list_add_back(const List* list_ptr, ListDataType n);
+ListDataType list_get(struct List list, size_t idx);
 
-ListNode* list_try_advance(ListNode* node, size_t steps);
+void list_free(struct List list);
 
-static ListNode* list_advance_unsafe(ListNode* node, size_t steps);
+struct ListNode* list_last_not_null_entry(struct List list);
 
-ListNode* list_advance(ListNode* node, size_t steps);
+size_t list_length(struct List list);
 
-bool list_is_empty(List list);
+struct ListNode* list_node_at(struct List list, size_t idx);
 
-ListDataType list_get(List list, size_t idx);
+intmax_t list_sum(struct List list);
 
-void list_free(List list);
+struct List list_deep_copy(struct List list);
 
-void list_free_node_rec(ListNode* node);
+bool list_equals(struct List lhs, struct List rhs);
 
-size_t list_length(List list);
-
-ListNode list_get_ptr_to_last_entry_and_length(List list);
-
-ListNode* list_node_at(List list, size_t idx);
-
-intmax_t list_sum(List list);
-
-intmax_t list_node_sum_rec(const ListNode* node);
-
-ListNode* list_node_deep_copy(const ListNode* node);
-
-List list_deep_copy(List list);
-
-bool list_equal(List lhs, List rhs);
+void list_reverse(struct List* list_ptr);
 
 #endif  // LOW_LEVEL_LINKED_LIST_H

@@ -1,63 +1,52 @@
 #include "list_high_order_functions.h"
 // #include "utilities.h"
 
-void foreach(const List list, void (* f)(ListDataType)) {
-  if (list_is_empty(list)) {
-    return;
-  }
-
-  const ListNode* curr_node = list.root;
+void foreach(const struct List list, void (* f)(ListDataType)) {
+  const struct ListNode* curr_node = list.root;
   while (curr_node != NULL) {
     f(curr_node->value);
-    curr_node = list_try_advance(curr_node, 1);
+    curr_node = curr_node->next;
   }
 }
 
-List map_mut(List list, ListDataType (* f)(ListDataType)) {
-  ListNode* curr_node = list.root;
+struct List map_mut(struct List list, ListDataType (* f)(ListDataType)) {
+  struct ListNode* curr_node = list.root;
   while (curr_node != NULL) {
     curr_node->value = f(curr_node->value);
-    curr_node = list_try_advance(curr_node, 1);
+    curr_node = curr_node->next;
   }
   return list;
 }
 
-List map(List list, ListDataType (* f)(ListDataType)) {
-  List mapped_list = list_deep_copy(list);
+struct List map(struct List list, ListDataType (* f)(ListDataType)) {
+  struct List mapped_list = list_deep_copy(list);
   map_mut(mapped_list, f);
   return mapped_list;
 }
 
-ListDataType foldl(ListDataType accum, ListDataType (* f)(ListDataType, ListDataType), List list) {
-  if (list_is_empty(list)) {
-    return accum;
-  }
-
-  ListNode* curr_node;
-  ListNode* next_node = list.root;
-  do {
-    curr_node = next_node;
+ListDataType foldl(ListDataType accum, ListDataType (* f)(ListDataType, ListDataType), struct List list) {
+  struct ListNode* curr_node = list.root;
+  while (curr_node != NULL) {
     accum = f(curr_node->value, accum);
-    next_node = list_try_advance(curr_node, 1);
-  } while (next_node != NULL);
-
+    curr_node = curr_node->next;
+  }
   return accum;
 }
 
-List iterate(const ListDataType s, const size_t n, ListDataType (* f)(ListDataType)) {
-  List res = { NULL };
+struct List iterate(const ListDataType s, const size_t n, ListDataType (* f)(ListDataType)) {
   if (n == 0) {
     // print_error_message_and_exit("don't know how to iterate 0 times");
-    return res;
+    return (struct List) { NULL };
   }
 
-  res.root = list_create_node(s);
-  ListNode* curr_node = res.root;
+  struct List res = list_create(s);
+  const struct ListNode* curr_node = res.root;
   for (size_t i = 0; i < n; ++i) {
     const ListDataType kNextNodeValue = f(curr_node->value);
-    curr_node->next = list_create_node(kNextNodeValue);
-    curr_node = curr_node->next;
+    list_add_front(&res, kNextNodeValue);
+    curr_node = res.root;
   }
 
+  list_reverse(&res);
   return res;
 }

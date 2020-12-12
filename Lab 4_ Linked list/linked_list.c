@@ -67,13 +67,8 @@ void list_add_back(struct List* const list_ptr, const ListDataType n) {
 }
 
 void list_free(struct List list) {
-  if (list_is_empty(list)) {
-    return;
-  }
-
   struct ListNode* curr_node = list.root;
-
-  while (curr_node->next != NULL) {
+  while (curr_node != NULL) {
     struct ListNode* next_node = curr_node->next;
     free(curr_node);
     curr_node = next_node;

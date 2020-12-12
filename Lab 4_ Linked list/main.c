@@ -9,22 +9,21 @@
 #include "linked_list.h"
 #include "utilities.h"
 
-struct List read_list_from_file(const FILE* const file) {
-  struct List res = { NULL };
-
+struct List read_list_from_file(FILE* const file) {
   ListDataType value;
-  int fscanf_returned = fscanf((FILE*) file, "%" SCNd64, &value);
-  if (fscanf_returned == 1) {
-    res = list_create(value);
-
-    do {
-      fscanf_returned = fscanf((FILE*) file, "%" SCNd64, &value);
-      if (fscanf_returned != 1) {
-        break;
-      }
-      list_add_front(&res, value);
-    } while (true);
+  int fscanf_returned = fscanf(file, "%" SCNd64, &value);
+  if (fscanf_returned != 1) {
+    return (struct List) { 0 };
   }
+
+  struct List res = list_create(value);
+  do {
+    fscanf_returned = fscanf(file, "%" SCNd64, &value);
+    if (fscanf_returned != 1) {
+      break;
+    }
+    list_add_front(&res, value);
+  } while (true);
 
   return res;
 }

@@ -3,14 +3,14 @@
 
 #include "linked_list.h"
 
-void foreach(List list, void (* f)(ListDataType));
+void foreach(struct List list, void (* f)(ListDataType));
 
-List map(List list, ListDataType (* f)(ListDataType));
+struct List map(struct List list, ListDataType (* f)(ListDataType));
 
-List map_mut(List list, ListDataType (* f)(ListDataType));
+struct List map_mut(struct List list, ListDataType (* f)(ListDataType));
 
-ListDataType foldl(ListDataType accum, ListDataType (* f)(ListDataType, ListDataType), List list);
+ListDataType foldl(ListDataType accum, ListDataType (* f)(ListDataType, ListDataType), struct List list);
 
-List iterate(ListDataType s, size_t n, ListDataType (* f)(ListDataType));
+struct List iterate(ListDataType s, size_t n, ListDataType (* f)(ListDataType));
 
 #endif  // LOW_LEVEL_LIST_HIGH_ORDER_FUNCTIONS_H
